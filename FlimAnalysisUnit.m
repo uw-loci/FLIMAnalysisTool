@@ -189,8 +189,16 @@ function open_file_button_Callback(hObject, eventdata, handles)
 global x imageName path intensity_image_name gray_image image_threshold_min fid image_threshold_max chi2_data chi2_min chi2_max;
 global im_t1_file im_t2_file im_a1_file im_a2_file;
 % [nameoffile, path]=uigetfile({'*.bmp';'*.tif'});% to open openfile gui
-[nameoffile, path]=uigetfile({'*.bmp;*.tiff','Intensity Image files(*.bmp,*.tiff)'});% to open openfile gui
+% [nameoffile, path]=uigetfile({'*.bmp;*.tiff','Intensity Image files(*.bmp,*.tiff)'});% to open openfile gui
 
+if(exist('path.mat')==2)
+   load path
+else 
+    prevPath='D:\';
+end
+
+pathSTR=strcat(prevPath,'*.bmp;*.tiff');
+[nameoffile, path] = uigetfile(pathSTR,'Intensity Image files(*.bmp,*.tiff)');
 
 handles = guidata(hObject); 
 axes(handles.axes_view_image);
@@ -222,7 +230,8 @@ imageName=char(firstPartName(1));% takes only the first string before the _ sign
 %reads intensity file
 % intensity_image_name=strcat(path,imageName,'_intensity_image.bmp');
 intensity_image_name=strcat(path,nameoffile);
-
+prevPath=path;
+save path prevPath
 
 image_threshold_min=0.15;
 image_threshold_max=1.0;
