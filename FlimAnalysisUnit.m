@@ -22,7 +22,7 @@ function varargout = FlimAnalysisUnit(varargin)
 
 % Edit the above text to modify the response to help FlimAnalysisUnit
 
-% Last Modified by GUIDE v2.5 08-Sep-2014 02:57:27
+% Last Modified by GUIDE v2.5 19-Jul-2016 11:02:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -120,7 +120,7 @@ set(handles.tm_box,'String',flim_params.tm);
 set(handles.t1_box,'String',flim_params.t1);
 set(handles.t2_box,'String',flim_params.t2);
 set(handles.a1_box,'String',flim_params.a1);
-
+set(handles.chi_2Mean,'String',flim_params.chi);
 
 % --- Executes on slider movement.
 function slider1_Callback(hObject, eventdata, handles)
@@ -391,7 +391,13 @@ val=arr(loc);
 hist_vals.a1=val;
 flim.a1=sum(val)/length(val)*100;
 
-%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%chi2%%%%%%%%%
+arr=reshape(chi2_data,1,m*n);
+val=arr(loc);
+hist_vals.chi=val;
+flim.chi=sum(val)/length(val);
+
+
 
 
 % --- Executes on key press with focus on slider1 and none of its controls.
@@ -482,7 +488,20 @@ plot(0:maximum,histo);
 
 maxpos=maxpos-1;
 
+function [histo maxpos max_value]= mean_with_histo_chi(val)
+val=round(val);
+maximum=max(val);
+L=length(val);
+histo=zeros(1,maximum+1);
+for i=1:L
+    histo(val(i)+1)=histo(val(i)+1)+1;
+end
 
+xAxisVal=linspace(0,maximum/100,length(histo));
+plot(xAxisVal,histo);
+[max_value maxpos]=max(histo);
+
+maxpos=maxpos-1;
 
 % --- Executes on button press in hist_tm.
 function hist_tm_Callback(hObject, eventdata, handles)
@@ -697,3 +716,50 @@ function open_file_button_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to open_file_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
+
+
+
+% --- Executes on button press in chi2_hist.
+function chi2_hist_Callback(hObject, eventdata, handles)
+% hObject    handle to chi2_hist (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global hist_vals data_excel;
+axes(handles.axes_hist);
+% hist(hist_vals.a1,10000);
+[hist_chi chi_pos chi_max_value_in_hist]=mean_with_histo_chi(100*hist_vals.chi);
+set(handles.hist_max_val,'String',chi_max_value_in_hist);
+set(handles.hist_max_pos,'String',chi_pos);
+data_excel=hist_chi;
+
+
+% --- Executes on button press in ROIButton.
+function ROIButton_Callback(hObject, eventdata, handles)
+global chi2_max chi2_min chi2_data gray_image image_threshold_min image_threshold_max h_im x;
+% hObject    handle to ROIButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+axes(handles.axes_view_image);
+
+h_im=imshow(x);
+e = imfreehand;
+BW = createMask(e,h_im);
+
+
+% --- Executes during object deletion, before destroying properties.
+function t2_box_DeleteFcn(hObject, eventdata, handles)
+% hObject    handle to t2_box (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes during object creation, after setting all properties.
+function t1_box_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to t1_box (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+function t2_box_CreateFcn(hObject, eventdata, handles)
+function a1_box_CreateFcn(hObject, eventdata, handles)
+function text33_CreateFcn(hObject, eventdata, handles)
+function chi_2Mean_CreateFcn(hObject, eventdata, handles)
