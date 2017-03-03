@@ -29,22 +29,6 @@ imageName=char(firstPartName(1));% takes only the first string before the _ sign
 intensity_image_name=strcat(path,nameoffile);
 
 
-
-
-
-%chi_data loading
-%file not exist condition needed to be added later
-chi2_data_name=strcat(path,imageName,'_chi.asc');
-
-if(exist(chi2_data_name,'file')==2)
-    chi2_data=importdata(chi2_data_name);
-    
-else
-    msgbox(strcat(imageName,'_chi.asc not found, please reload'));
-    return;
-end
-
-
 parameter_inputt1=strcat(path,imageName,'_t1.asc');
 parameter_inputt2=strcat(path,imageName,'_t2.asc');
 parameter_inputa1=strcat(path,imageName,'_a1[%].asc');
@@ -132,6 +116,10 @@ if(ThirdParameterFlag==1)
     tm=tm+im_a3.*im_t3;
     flim.t3=mean(im_t3(loc));
     flim.a3=100*mean(im_a3(loc));
+    %std_dev
+    
+    flim.t3_std_dev=std(im_t3(loc));
+    flim.a3_std_dev=100*std(im_a3(loc));
 end
 
 
@@ -142,6 +130,14 @@ flim.t2=mean(im_t2(loc));
 flim.a1=100*mean(im_a1(loc));
 flim.a2=100*mean(im_a2(loc));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Std dev value
+
+flim.tm_std_dev=std(tm(loc));
+flim.t1_std_dev=std(im_t1(loc));
+flim.t2_std_dev=std(im_t2(loc));
+flim.a1_std_dev=100*std(im_a1(loc));
+flim.a2_std_dev=100*std(im_a2(loc));
+%%%%%%%%%%%%%%
 
 flim.nameoffile=firstPartName{1};
 flim.ThirdParameterFlag=ThirdParameterFlag;
